@@ -39,6 +39,7 @@ type SpinLoaderWithLabelProps = Omit<SpinLoaderProps, 'size' | 'title'> & {
 type CancelLoaderProps = Omit<SpinLoaderWithLabelProps, 'children'> & {
   onCancel(): void;
   cancelText: string;
+  progressAmount: number;
 };
 
 const shellLoaderSpin = keyframes`
@@ -107,6 +108,7 @@ function SpinLoaderWithLabel({
 function CancelLoader({
   cancelText = 'Cancel',
   onCancel,
+  progressAmount,
   ...props
 }: CancelLoaderProps): React.ReactElement {
   return (
@@ -118,6 +120,9 @@ function CancelLoader({
       >
         {cancelText}
       </Button>
+      <progress id="queryProgress" value={progressAmount} max="100">
+        {' '}
+      </progress>
     </SpinLoaderWithLabel>
   );
 }

@@ -407,6 +407,7 @@ type CrudState = {
   isCollectionScan?: boolean;
   isSearchIndexesSupported: boolean;
   bulkDelete: BulkDeleteState;
+  progress: number;
 };
 
 class CrudStoreImpl
@@ -423,10 +424,12 @@ class CrudStoreImpl
   dataService!: DataService;
   localAppRegistry!: AppRegistry;
   globalAppRegistry!: AppRegistry;
+  numProgUpdates: number;
 
   constructor(options: CrudStoreOptions) {
     super(options);
     this.listenables = options.actions as any; // TODO: The types genuinely mismatch here
+    this.numProgUpdates = 0;
   }
 
   updateFields(fields: { autocompleteFields: { name: string }[] }) {
@@ -471,6 +474,7 @@ class CrudStoreImpl
         status: 'closed',
         affected: 0,
       },
+      progress: 0,
     };
   }
 
@@ -971,6 +975,28 @@ class CrudStoreImpl
     );
 
     cancelDebounceLoad();
+  }
+
+  async updateQueryProgress() {
+    const { ns } = this.state;
+
+    let error: Error | undefined;
+    let documents: Document[];
+
+    try {
+      documents = await this.dataService.aggregate(ns, [{ $progress: {} }]);
+    } catch (err: any) {
+      documents = [];
+      error = err;
+    }
+
+    // TODO: parse documents to get progress out of it. For now, set it to 0% + some.
+    const prog = 0 + this.numProgUpdates * 5;
+    console.log('updating query progress: ' + String(prog));
+    this.setState({
+      progress: prog,
+    });
+    this.numProgUpdates++;
   }
 
   /**

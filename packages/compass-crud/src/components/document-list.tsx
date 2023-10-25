@@ -193,6 +193,13 @@ class DocumentList extends React.Component<DocumentListProps> {
    * Render the fetching indicator with cancel button
    */
   renderFetching() {
+    // TODO: Need to clear this interval somewhere to stop the loop.
+    this.periodicInterval = setInterval(() => {
+      // TODO: Is voiding this promise correct?
+      // There seems to be a non-trivial interaction between promises and setInterval().
+      void this.props.store.updateQueryProgress();
+      console.log('running interval');
+    }, 100);
     return (
       <div className={loaderContainerStyles}>
         <CancelLoader
@@ -200,6 +207,7 @@ class DocumentList extends React.Component<DocumentListProps> {
           progressText="Fetching Documents"
           cancelText="Stop"
           onCancel={this.onCancelClicked.bind(this)}
+          progressAmount={this.props.store.state.progress}
         />
       </div>
     );

@@ -142,6 +142,7 @@ export const PipelineResultsWorkspace: React.FunctionComponent<
       </ResultsContainer>
     );
   } else if (isLoading) {
+    // TODO: Do the same thing we do in document-list.tsx to invoke DataStore?
     results = (
       <ResultsContainer center>
         <CancelLoader
@@ -157,6 +158,7 @@ export const PipelineResultsWorkspace: React.FunctionComponent<
           }
           cancelText="Stop"
           onCancel={onCancel}
+          progressAmount={10}
         />
       </ResultsContainer>
     );
