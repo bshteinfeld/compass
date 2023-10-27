@@ -169,6 +169,10 @@ class DocumentList extends React.Component<DocumentListProps> {
    * @returns {React.Component} The document list views.
    */
   renderViews() {
+    console.log(
+      'renderViews() clearing interval: ' + String(this.periodicInterval)
+    );
+    clearInterval(this.periodicInterval);
     if (this.props.docs?.length === 0) {
       return null;
     }
@@ -193,6 +197,7 @@ class DocumentList extends React.Component<DocumentListProps> {
    * Render the fetching indicator with cancel button
    */
   renderFetching() {
+    clearInterval(this.periodicInterval);
     // TODO: Need to clear this interval somewhere to stop the loop.
     this.periodicInterval = setInterval(() => {
       // TODO: Is voiding this promise correct?
@@ -200,6 +205,10 @@ class DocumentList extends React.Component<DocumentListProps> {
       void this.props.store.updateQueryProgress();
       console.log('running interval');
     }, 100);
+    console.log(
+      'renderFetching() set up interval: ' + String(this.periodicInterval)
+    );
+
     return (
       <div className={loaderContainerStyles}>
         <CancelLoader

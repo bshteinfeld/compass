@@ -984,15 +984,22 @@ class CrudStoreImpl
     let documents: Document[];
 
     try {
-      documents = await this.dataService.aggregate(ns, [{ $progress: {} }]);
+      documents = await this.dataService.aggregate(ns, [
+        { $progress: {} },
+        { $match: { operator: 'FULL', query: 123456 } },
+      ]);
     } catch (err: any) {
       documents = [];
       error = err;
     }
 
-    // TODO: parse documents to get progress out of it. For now, set it to 0% + some.
-    const prog = 0 + this.numProgUpdates * 5;
-    console.log('updating query progress: ' + String(prog));
+    let prog = 0.0;
+    if (documents.length > 0 && documents[0].hasOwnProperty('progress')) {
+      prog = documents[0].progress * 100;
+    }
+
+    console.log(prog);
+
     this.setState({
       progress: prog,
     });
